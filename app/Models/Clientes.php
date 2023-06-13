@@ -15,18 +15,18 @@ class Clientes extends Model
         'nome',
         'email',
         'telefone',
-        'data_de_nascimento',
+        'dataNascimento',
         'endereco',
         'complemento',
         'bairro',
         'cep',
-        'data_de_cadastro'
+        'dataCadastro'
     ];
 
     // realacionamento com Pedidos
     public function pedidos()
     {
-        return $this->belongsTo(Pedidos::class, 'codigo_do_cliente', 'id');
+        return $this->belongsTo(Pedidos::class, 'idCliente', 'id');
     }
 
 }

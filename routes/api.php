@@ -29,3 +29,9 @@ Route::apiResource('/clientes', 'App\Http\Controllers\ClientesController');
  * Produtos
  */
 Route::apiResource('/produtos', 'App\Http\Controllers\ProdutosController');
+
+
+/**
+ * Pedidos
+ */
+Route::apiResource('/pedidos', 'App\Http\Controllers\PedidosController');

@@ -2,37 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProdutosRequest;
+use App\Http\Requests\UpdateProdutosRequest;
+use App\Http\Resources\ProdutosCollection;
+use App\Http\Resources\ProdutosResource;
 use App\Models\Produtos;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ProdutosController extends Controller
 {
-    public function index()
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
-        return Produtos::all();
+        $query = Produtos::query();
+        $produtos = $query->paginate(5);
+        $produtosListResource = new ProdutosCollection($produtos);
+
+        return response()->json(
+            $produtosListResource
+        );
     }
 
-    public function store(Request $request)
+
+    public function store(StoreProdutosRequest $request): JsonResponse
     {
-        Produtos::create($request->all());
+        $fotoPath = $request->file('foto')->store('public/produtos');
+        $req = $request->all();
+        $req['foto'] = $fotoPath;
+
+        return response()->json(
+            ProdutosResource::make(Produtos::create($req)),
+            201
+        );
     }
 
-    public function show($id)
+    public function show(int $produtos): JsonResponse
     {
-        return Produtos::findOrFail($id);
+        return response()->json(
+            ProdutosResource::make(Produtos::query()->findOrFail($produtos))
+        );
     }
 
-    public function update(Request $request, $id)
+    public function update(int $produtos, UpdateProdutosRequest $request): Response
     {
-        $product = Produtos::findOrFail($id);
-        $product->update($request->all());
+        $req = $request->all();
+        $produtos = Produtos::query()->find($produtos);
+
+        if ($produtos && isset($produtos->foto)) {
+            Storage::delete($produtos->foto);
+        }
+
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('public/produtos');
+            $req['foto'] = $fotoPath;
+        }
+
+        $produtos->update($req);
+
+        return response()->noContent(201);
     }
 
-    public function destroy($id)
+    public function destroy(int $produtos): Response
     {
-        $product = Produtos::findOrFail($id);
-        $product->delete();
+        Produtos::destroy($produtos);
+        return response()->noContent();
     }
 }

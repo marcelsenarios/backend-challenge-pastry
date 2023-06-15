@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\PedidosController;
+use App\Http\Controllers\ProdutosController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,24 +16,55 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([], function () {
+   /**
+    * CLIENTES
+    */
+    Route::prefix('clientes')->group(function () {
+        Route::controller(ClientesController::class)->group(function () {
+            Route::name('clientes.')->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+            });
+        });
+    });
+
+
+    /**
+     * PRODUTOS
+     */
+    Route::prefix('produtos')->group(function () {
+        Route::controller(ProdutosController::class)->group(function () {
+            Route::name('produtos.')->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('', 'store')->name('store');
+                Route::post('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+            });
+        });
+    });
+
+    /**
+     * PEDIDOS
+     */
+    Route::prefix('pedidos')->group(function () {
+        Route::controller(PedidosController::class)->group(function () {
+            Route::name('pedidos.')->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+                Route::get('{pedidos}/produtos', 'showProducts')->name('showProducts');
+                Route::get('{pedidos}/clientes', 'showCostumers')->name('showCostumers');
+            });
+        });
+    });
 });
-
-
-/**
- * Clientes
- */
-Route::apiResource('/clientes', 'App\Http\Controllers\ClientesController');
-
-
-/**
- * Produtos
- */
-Route::apiResource('/produtos', 'App\Http\Controllers\ProdutosController');
-
-
-/**
- * Pedidos
- */
-Route::apiResource('/pedidos', 'App\Http\Controllers\PedidosController');

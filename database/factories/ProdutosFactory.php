@@ -4,9 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Produtos;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-//use Illuminate\Http\File;
-
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Produtos>
  */
@@ -23,7 +20,7 @@ class ProdutosFactory extends Factory
     {
         $produtos_path = storage_path('app/public/produtos');
 
-        $pastel = $this->faker->unique(false, 1000)->pastelName();
+        $pastel = $this->faker->unique(false, 1000)->nomePastel();
 
         $image = $this->faker->imageUrl(600, 450, null, false, $pastel, false, 'png');
 

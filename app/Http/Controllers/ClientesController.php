@@ -2,37 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreClientesRequest;
+use App\Http\Requests\UpdateClientesRequest;
+use App\Http\Resources\ClientesCollection;
+use App\Http\Resources\ClientesResource;
 use App\Models\Clientes;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ClientesController extends Controller
 {
-    public function index()
+
+    public function index(): JsonResponse
     {
-        return Clientes::all();
+        $query = Clientes::query();
+        $clientes = $query->paginate(5);
+        $clientesListResource = new ClientesCollection($clientes);
+
+        return response()->json(
+            $clientesListResource
+        );
     }
 
-    public function store(Request $request)
+    public function store(StoreClientesRequest $request): JsonResponse
     {
-        Clientes::create($request->all());
+        return response()->json(
+            ClientesResource::make(Clientes::create($request->all())),
+            201
+        );
     }
 
-    public function show($id)
+    public function show(int $clientes): JsonResponse
     {
-        return Clientes::findOrFail($id);
+        return response()->json(
+            ClientesResource::make(Clientes::query()->findOrFail($clientes))
+        );
     }
 
-    public function update(Request $request, $id)
+    public function update(int $clientes, Request $request): JsonResponse
     {
-        $product = Clientes::findOrFail($id);
-        $product->update($request->all());
+        Clientes::query()->find($clientes)->update($request->all());
+
+        return response()->json(
+            ClientesResource::make(
+                Clientes::query()->findOrFail($clientes)
+            ),
+            201
+        );
     }
 
-    public function destroy($id)
+    public function destroy(int $clientes): Response
     {
-        $product = Clientes::findOrFail($id);
-        $product->delete();
+        Clientes::destroy($clientes);
+        return response()->noContent();
     }
 }

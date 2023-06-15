@@ -2,36 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePedidosRequest;
+use App\Http\Requests\UpdatePedidosRequest;
+use App\Http\Resources\PedidosCollection;
+use App\Http\Resources\PedidosResource;
 use App\Models\Pedidos;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class PedidosController extends Controller
 {
+
     public function index()
     {
-        return Pedidos::all();
+        $query = Pedidos::query();
+        $pedidos = $query->paginate(5);
+        $pedidosListResource = new PedidosCollection($pedidos);
+
+        return response()->json(
+            $pedidosListResource
+        );
     }
 
-    public function store(Request $request)
+    public function store(StorePedidosRequest $request): JsonResponse
     {
-        Pedidos::create($request->all());
+        $pedido = new Pedidos();
+        $pedido->codigo_do_cliente = $request->input('codigo_do_cliente');
+        $pedido->codigo_do_produto = $request->input('codigo_do_produto');
+        $pedido->save();
+
+        return response()->json(['message' => 'Pedido criado com sucesso'], 201);
     }
 
-    public function show($id)
+    public function show(int $pedidos): JsonResponse
     {
-        return Pedidos::findOrFail($id);
+        return response()->json(
+            PedidosResource::make(
+                Pedidos::query()->findOrFail($pedidos)
+            )
+        );
     }
 
-    public function update(Request $request, $id)
+    public function update(int $pedidos, UpdatePedidosRequest $request)
     {
-        $product = Pedidos::findOrFail($id);
-        $product->update($request->all());
+        Pedidos::query()->find($pedidos)->update($request->all());
+
+        return response()->json(
+            PedidosResource::make(
+                Pedidos::query()->findOrFail($pedidos)
+            ),
+            201
+        );
     }
 
-    public function destroy($id)
+    public function destroy(int $pedidos): Response
     {
-        $product = Pedidos::findOrFail($id);
-        $product->delete();
+        Pedidos::destroy($pedidos);
+        return response()->noContent();
+    }
+
+    public function showProducts(Pedidos $pedidos)
+    {
+        $produtos = $pedidos->produtos;
+        return response()->json($produtos);
+    }
+
+    public function showCostumers(Pedidos $pedidos)
+    {
+        $clientes = $pedidos->clientes;
+        return response()->json($clientes);
     }
 }

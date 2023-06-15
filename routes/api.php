@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ClientesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,24 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([], function () {
+   /**
+    * CLIENTES
+    */
+    Route::prefix('clientes')->group(function () {
+        Route::controller(ClientesController::class)->group(function () {
+            Route::name('clientes.')->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+            });
+        });
+    });
 });
-
-
-/**
- * Clientes
- */
-Route::apiResource('/clientes', 'App\Http\Controllers\ClientesController');
-
-
-/**
- * Produtos
- */
-Route::apiResource('/produtos', 'App\Http\Controllers\ProdutosController');
-
-
-/**
- * Pedidos
- */
-Route::apiResource('/pedidos', 'App\Http\Controllers\PedidosController');

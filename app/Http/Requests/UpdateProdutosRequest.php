@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateClientesRequest extends FormRequest
+class UpdateProdutosRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class UpdateClientesRequest extends FormRequest
     {
         $method = $this->method();
 
-        if ($method == 'PUT' || $method == 'POST') {
+        if ($method == 'POST') {
             $isRequiredOrSometimes = 'required';
         } else {
             $isRequiredOrSometimes = 'sometimes';
@@ -31,15 +31,8 @@ class UpdateClientesRequest extends FormRequest
 
         return [
             'nome' => "$isRequiredOrSometimes|string|max:255",
-            'email' => "$isRequiredOrSometimes|email|unique:clientes",
-            'telefone' => "$isRequiredOrSometimes|string|max:20",
-            'dataNascimento' => "$isRequiredOrSometimes|date",
-            'endereco' => "$isRequiredOrSometimes|string|max:255",
-            'complemento' => 'nullable|string|max:255',
-            'bairro' => "$isRequiredOrSometimes|string|max:255",
-            'cep' => "$isRequiredOrSometimes|string|max:10",
-            'dataCadastro' => "$isRequiredOrSometimes|date",
+            'preco' => "$isRequiredOrSometimes|numeric",
+            'foto' => "$isRequiredOrSometimes|file|mimes:jpeg,png,jpg,gif,svg|max:2048",
         ];
     }
-
 }

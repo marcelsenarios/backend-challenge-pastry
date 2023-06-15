@@ -30,4 +30,21 @@ Route::group([], function () {
             });
         });
     });
+
+
+    /**
+     * PRODUTOS
+     */
+    Route::prefix('produtos')->group(function () {
+        Route::controller(ProdutosController::class)->group(function () {
+            Route::name('produtos.')->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('', 'store')->name('store');
+                Route::post('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+            });
+        });
+    });
 });
